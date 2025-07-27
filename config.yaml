@@ -1,0 +1,84 @@
+urls:
+# keep-sorted start block=yes newline_separated=yes
+- namespace: cargo
+  url: |-
+    https://crates.io/crates/{{ .Name }}
+    {{- if .Version -}}/{{ .Version }}{{- end -}}
+
+- namespace: circleci
+  url: |-
+    https://circleci.com/developer/orbs/orb/{{ .Namespace }}/{{ .Name }}
+    {{- if .Version -}}?version={{ .Version }}{{- end -}}
+
+- namespace: docker
+  url: |-
+    {{- if eq .Qualifiers.repository_url "public.ecr.aws" -}}
+      https://gallery.ecr.aws
+    {{- else if not (index .Qualifiers "repository_url") -}}
+      https://hub.docker.com/r
+    {{- else -}}
+      https://{{ .Qualifiers.repository_url }}
+    {{- end -}}
+    {{- if eq .Namespace "" -}}
+      /library
+    {{- else -}}
+      /{{ .Namespace }}
+    {{- end -}}
+    /{{ .Name }}
+
+- namespace: gem
+  url: |-
+    https://rubygems.org/gems/{{ .Name }}
+    {{- if .Version -}}/versions/{{ .Version }}{{- end -}}
+
+- namespace: github
+  url: |-
+    https://github.com/{{ .Namespace }}/{{ .Name }}
+
+    {{- if and (eq .Subpath "") (eq .Version "") -}}
+    {{- else if and (not (eq .Subpath "")) (eq .Version "") -}}
+      /tree/HEAD
+    {{- else -}}
+      /tree/{{ .Version }}
+    {{- end -}}
+    {{- if .Subpath -}}/{{ .Subpath }}{{- end -}}
+
+- namespace: githubactions
+  url: |-
+    {{- $parts := (list .Namespace .Name) | join "/" | splitn "/" 3 -}}
+
+    https://github.com/{{ $parts._0 }}/{{ $parts._1 }}
+    {{- if not (eq .Version "") -}}
+      /tree/{{ .Version }}
+      {{- if $parts._2 -}}
+        /{{ $parts._2 }}
+      {{- else if .Subpath -}}
+        /{{ .Subpath }}
+      {{- end -}}
+    {{- end -}}
+
+- namespace: golang
+  url: |-
+    https://pkg.go.dev/{{ .Namespace }}/{{ .Name }}
+    {{- if .Version -}}@{{ .Version }}{{- end -}}
+
+- namespace: maven
+  url: |-
+    https://search.maven.org/artifact/{{ .Namespace }}/{{ .Name }}
+    {{- if .Version -}}/{{ .Version }}/jar{{- end -}}
+
+- namespace: npm
+  url: |-
+    https://www.npmjs.com/package/{{ .Name }}
+    {{- if .Version -}}/v/{{ .Version }}{{- end -}}
+
+- namespace: nuget
+  url: |-
+    https://www.nuget.org/packages/{{ .Name }}
+    {{- if .Version -}}/{{ .Version }}{{- end -}}
+
+- namespace: pypi
+  url: |-
+    https://pypi.org/project/{{ .Name }}
+    {{- if .Version -}}/{{ .Version }}{{- end -}}
+# keep-sorted end
